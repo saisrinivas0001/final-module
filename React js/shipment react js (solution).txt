@@ -1,0 +1,166 @@
+// ShipmentForm.js
+import React, { useState } from "react";
+import { addShipment, getAllShipments } from "./ShipmentService";
+import './App.css';
+function ShipmentForm() {
+  const [isValid, setValid]=useState(true);
+  const [formData, setFormData] = useState({
+    sender: "",
+    receiver: "",
+    origin: "",
+    destination: "",
+    status: "",
+    expectedDelivery: "",
+  });
+
+  const handleChange = (e) => {
+    // set form data on chainge
+    switch(e.target.id){
+      case "sender":
+        setFormData({...formData, sender:e.target.value})
+        break;
+      case "receiver":
+        setFormData({...formData, receiver:e.target.value})
+        break;
+      case "origin":
+        setFormData({...formData, origin:e.target.value})
+        break;
+      case "destination":
+        setFormData({...formData, destination:e.target.value})
+        break;
+      case "status":
+        setFormData({...formData, status:e.target.value})
+        break;
+      case "expectedDelivery":
+        setFormData({...formData, expectedDelivery:e.target.value})
+        break;
+    }
+  };
+  const generateTrackingId = (shipments) => {
+    // generate proper tracking ID
+  };
+  const [errors, setErrors] = useState({
+    sender: "",
+    receiver: "",
+    origin: "",
+    destination: "",
+    status: "",
+    expectedDelivery: "",
+  });
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    // Validation rules and display appropriate erros 
+    if(!formData.sender || formData.sender==' '){
+      newErrors.sender="Sender is required";    
+      isValid=false;  
+    }else{
+      newErrors.sender="";
+     
+    }
+    if(!formData.receiver || formData.receiver==' '){
+      newErrors.receiver="Receiver is required";
+      isValid=false;
+    }else{
+      newErrors.receiver="";
+     
+    }
+    if(!formData.origin){
+      newErrors.origin="Origin is required";
+      isValid=false;
+    }else{
+      newErrors.origin="";
+     
+    }
+    if(!formData.destination){
+      newErrors.destination="Destination is required";
+      isValid=false;
+    }else{
+      newErrors.destination="";
+     
+    }
+    if(!formData.status){
+      newErrors.status="Status is required";
+      isValid=false;
+    }else{
+      newErrors.status="";
+     
+    }
+    if(formData.status=='In Transit'){
+      newErrors.status="";
+      
+    }
+    if(!formData.expectedDelivery){
+      newErrors.expectedDelivery="Expected Delivery is required";
+      isValid=false;
+    }else{
+      newErrors.expectedDelivery="";
+     
+    }
+
+    setErrors(newErrors);
+    if(isValid){
+      setValid(true);
+      setErrors({ sender: "",
+      receiver: "",
+      origin: "",
+      destination: "",
+      status: "",
+      expectedDelivery: ""})
+    }
+    return isValid;
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+//   validate form before posting data
+   var isValid= validateForm();
+   if(isValid){
+    setValid(true)
+    setErrors({ sender: "",
+    receiver: "",
+    origin: "",
+    destination: "",
+    status: "",
+    expectedDelivery: ""})
+  }
+// handle submit and post shipment data by calling shipmentServer function
+    if(isValid){
+      addShipment(formData)
+    .then((response=>{
+      console.log(response);
+    }))
+    .catch(err=>{
+      console.log(err);
+    })
+    }
+  };
+
+  return (
+    <div className="shipment-form-container">
+      <h2>Register New Shipment</h2>
+     {/* crete shipment form */}
+     <form onSubmit={handleSubmit}>
+     <label htmlFor="sender">Sender:</label> <input type="text" id="sender" onChange={handleChange} value="" />
+     <div>{errors.sender}</div>
+    <label htmlFor="receiver">Receiver:</label> <input type="text" id="receiver" onChange={handleChange} />
+    <div>{errors.receiver}</div>
+    <label htmlFor="origin">Origin:</label> <input type="text" id="origin" onChange={handleChange} />
+    <div>{errors.origin}</div>
+    <label htmlFor="destination">Destination:</label> <input type="text" id="destination" onChange={handleChange} />
+    <div>{errors.destination}</div>
+    <label htmlFor="status">Status:</label><input type="text" id="status" onChange={handleChange} />
+    <div>{errors.status}</div>
+    
+    <label htmlFor="expectedDelivery">Expected Delivery:</label> <input type="text" id="expectedDelivery" onChange={handleChange} /><br/>
+    <div>{errors.expectedDelivery}</div>
+    <input type="submit" value="Register Shipment" />
+     </form>
+
+    </div>
+    
+
+  );
+}
+
+export default ShipmentForm;

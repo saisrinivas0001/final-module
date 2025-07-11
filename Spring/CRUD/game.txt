@@ -1,0 +1,130 @@
+Implement CRUD using SpringBoot, JPA and MySQL for an online gaming application
+
+
+
+
+package com.wecp.onlinegamingapplication.entity;
+
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+public class Game {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long gameId;
+
+    private String gameName;
+
+    private String genre;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Team> teams = new ArrayList<>();
+
+    // No-arg constructor (important for JPA)
+    public Game() {}
+
+    public Game(Long gameId, String gameName, String genre) {
+        this.gameId = gameId;
+        this.gameName = gameName;
+        this.genre = genre;
+    }
+
+    // Getters and Setters
+    public Long getGameId() { return gameId; }
+    public void setGameId(Long gameId) { this.gameId = gameId; }
+
+    public String getGameName() { return gameName; }
+    public void setGameName(String gameName) { this.gameName = gameName; }
+
+    public String getGenre() { return genre; }
+    public void setGenre(String genre) { this.genre = genre; }
+
+    public List<Team> getTeams() { return teams; }
+    public void setTeams(List<Team> teams) { this.teams = teams; }
+}
+
+
+
+
+
+package com.wecp.onlinegamingapplication.entity;
+
+import javax.persistence.*;
+import java.util.List;
+
+@Entity
+public class Team {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long teamId;
+
+    private String teamName;
+
+    @ElementCollection
+    private List<String> players;
+
+    @ManyToOne
+    @JoinColumn(name = "game_id", nullable = false)
+    private Game game;
+
+    public Team() {}
+
+    public Team(Long teamId, String teamName, List<String> players) {
+        this.teamId = teamId;
+        this.teamName = teamName;
+        this.players = players;
+    }
+
+    public Long getTeamId() { return teamId; }
+    public void setTeamId(Long teamId) { this.teamId = teamId; }
+
+    public String getTeamName() { return teamName; }
+    public void setTeamName(String teamName) { this.teamName = teamName; }
+
+    public List<String> getPlayers() { return players; }
+    public void setPlayers(List<String> players) { this.players = players; }
+
+    public Game getGame() { return game; }
+    public void setGame(Game game) { this.game = game; }
+}
+
+
+
+
+package com.wecp.onlinegamingapplication.repository;
+
+
+import com.wecp.onlinegamingapplication.entity.Team;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface TeamRepository extends JpaRepository<Team,Long> {
+
+    // use jpa repository
+}
+
+
+
+
+
+package com.wecp.onlinegamingapplication.repository;
+
+import com.wecp.onlinegamingapplication.entity.Game;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface GameRepository  extends JpaRepository<Game,Long>{
+    // use jpa repository
+}
+
+
+
+
